@@ -58,7 +58,7 @@ const theme = createTheme({
     h1: {
       fontWeight: 700,
       fontSize: '3.5rem',
-      background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+      background: 'linear-gradient(45deg, #f8f8f8ff 30%, #764ba2 90%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
     },
@@ -275,23 +275,8 @@ function App() {
           }}
         >
           <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
-            <Avatar
-              sx={{
-                width: 120,
-                height: 120,
-                mx: 'auto',
-                mb: 3,
-                bgcolor: 'rgba(255,255,255,0.2)',
-                fontSize: '3rem',
-              }}
-            >
-              BK
-            </Avatar>
             <Typography variant="h1" component="h1" gutterBottom>
               Bakari Kerr
-            </Typography>
-            <Typography variant="h5" component="p" sx={{ mb: 4, opacity: 0.9, maxWidth: 600, mx: 'auto' }}>
-              Computer Science undergraduate student at the University of Florida, passionate about full-stack development, data science, and machine learning.
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button
@@ -339,16 +324,7 @@ function App() {
             }}
           >
             <Typography variant="h6" component="p" sx={{ mb: 3, lineHeight: 1.8, color: 'text.secondary' }}>
-              I'm a dedicated software engineer with a passion for crafting efficient, 
-              scalable solutions. With expertise in modern web technologies including 
-              React, Node.js, and cloud platforms, I enjoy tackling complex problems 
-              and turning ideas into reality.
-            </Typography>
-            <Typography variant="h6" component="p" sx={{ lineHeight: 1.8, color: 'text.secondary' }}>
-              When I'm not coding, you can find me exploring new technologies, 
-              contributing to open-source projects, or sharing knowledge with the 
-              developer community. I believe in writing clean, maintainable code 
-              and following industry best practices.
+              I am a Computer Science undergraduate student at the University of Florida, passionate about full-stack development and data science. I love exploring the various ways artificial intelligence and machine learning can be applied to solve real-world problems.
             </Typography>
           </Paper>
         </Container>
