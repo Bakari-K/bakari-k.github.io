@@ -1,38 +1,348 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 .App {
-  text-align: center;
+  text-align: left;
+  position: relative;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Enhanced Background Patterns */
+body {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+/* Custom scrollbar with smoother design */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.8);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(241, 245, 249, 0.8);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-.App-link {
-  color: #61dafb;
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-@keyframes App-logo-spin {
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+  }
+}
+
+/* Apply staggered animations to sections */
+.App > *:nth-child(1) { animation: fadeInUp 0.8s ease-out 0.1s both; }
+.App > *:nth-child(2) { animation: fadeInUp 0.8s ease-out 0.2s both; }
+.App > *:nth-child(3) { animation: fadeInUp 0.8s ease-out 0.3s both; }
+.App > *:nth-child(4) { animation: fadeInUp 0.8s ease-out 0.4s both; }
+.App > *:nth-child(5) { animation: fadeInUp 0.8s ease-out 0.5s both; }
+
+/* Enhanced focus styles for accessibility */
+button:focus,
+a:focus {
+  outline: 3px solid #667eea;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Custom gradient text utility with animation */
+.gradient-text {
+  background: linear-gradient(45deg, #667eea 30%, #764ba2 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Enhanced loading animation */
+@keyframes spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+/* Card hover effects with enhanced transitions */
+.MuiCard-root {
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.MuiCard-root::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transition: left 0.5s;
+  z-index: 1;
+}
+
+.MuiCard-root:hover::before {
+  left: 100%;
+}
+
+.MuiCard-root:hover {
+  transform: translateY(-12px) scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Enhanced button styles */
+.MuiButton-root {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.MuiButton-root::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transition: all 0.3s;
+  transform: translate(-50%, -50%);
+}
+
+.MuiButton-root:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Avatar enhancements */
+.MuiAvatar-root {
+  transition: all 0.3s ease;
+}
+
+.MuiAvatar-root:hover {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Navigation bar enhancements */
+.MuiAppBar-root {
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Chip enhancements */
+.MuiChip-root {
+  transition: all 0.3s ease !important;
+}
+
+.MuiChip-root:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Typography enhancements */
+h1, h2, h3, h4, h5, h6 {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Icon button enhancements */
+.MuiIconButton-root {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.MuiIconButton-root:hover {
+  animation: glow 1.5s ease-in-out infinite;
+}
+
+/* Section dividers */
+.section-divider {
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  margin: 0 auto 3rem;
+  border-radius: 2px;
+  position: relative;
+}
+
+.section-divider::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 4px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.section-divider:hover::after {
+  opacity: 0.3;
+}
+
+/* Responsive design improvements */
+@media (max-width: 900px) {
+  .App {
+    font-size: 14px;
+  }
+  
+  .MuiCard-root:hover {
+    transform: translateY(-6px) scale(1.01);
+  }
+  
+  .mobile-spacing {
+    padding: 1.5rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .MuiCard-root:hover {
+    transform: translateY(-4px);
+  }
+  
+  h1 {
+    font-size: 2.5rem !important;
+  }
+  
+  h2 {
+    font-size: 2rem !important;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .MuiCard-root:hover {
+    transform: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .gradient-text,
+  h1, h2, h3, h4, h5, h6 {
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
+    color: #000 !important;
+    font-weight: 700;
+  }
+  
+  .MuiCard-root {
+    border: 2px solid #000 !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .MuiAppBar-root,
+  .MuiIconButton-root {
+    display: none !important;
+  }
+  
+  .MuiCard-root {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
   }
 }
