@@ -126,7 +126,7 @@ function App() {
       icon: <Groups />,
     },
     {
-      title: "Pre-professional Director",
+      title: "Pre-Professional Director",
       company: "Trailblazers Initiative",
       period: "April 2025 - Present",
       description: "Leading initiatives to support underrepresented students in STEM through mentorship, workshops, and community building. Organizing events to connect students with industry professionals and resources",
