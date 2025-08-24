@@ -104,7 +104,7 @@ function App() {
       title: "Undergraduate Researcher",
       company: "Gator Glaciology Lab",
       period: "August 2025 - Present",
-      description: "Using novel geophysical and machine learning techniques to map the cavities beneath Antarctica’s ice shelves. Utilizing Bayesian statistics and Markov chain Monte Carlo approaches to analyze subglacial environments.",
+      description: "Using novel geophysical and machine learning techniques to map the cavities beneath Antarctica's ice shelves. Utilizing Bayesian statistics and Markov chain Monte Carlo approaches to analyze subglacial environments.",
       icon: <AcUnit />,
     },
     {
@@ -161,7 +161,16 @@ function App() {
 
               // Check for image files in root directory
               let projectImage = null;
+              let defaultBranch = 'main'; // Start with main branch
+              
               try {
+                // First, get repository info to determine the default branch
+                const repoResponse = await octokit.rest.repos.get({
+                  owner: githubUsername,
+                  repo: project.name,
+                });
+                defaultBranch = repoResponse.data.default_branch;
+                
                 const contentsResponse = await octokit.rest.repos.getContent({
                   owner: githubUsername,
                   repo: project.name,
@@ -174,11 +183,39 @@ function App() {
                 );
 
                 if (imageFiles.length > 0) {
-                  projectImage = `https://raw.githubusercontent.com/${githubUsername}/${project.name}/main/${imageFiles[0].name}`;
+                  projectImage = `https://raw.githubusercontent.com/${githubUsername}/${project.name}/${defaultBranch}/${imageFiles[0].name}`;
                 }
               } catch (imageError) {
-                // Image check failed, continue without image
-                console.log(`No image found for ${project.name}`);
+                // If default branch fails, try the other common branch names
+                const branchesToTry = defaultBranch === 'main' ? ['master'] : ['main'];
+                
+                for (const branch of branchesToTry) {
+                  try {
+                    const contentsResponse = await octokit.rest.repos.getContent({
+                      owner: githubUsername,
+                      repo: project.name,
+                      path: '',
+                      ref: branch
+                    });
+
+                    const imageFiles = contentsResponse.data.filter(file => 
+                      file.name.toLowerCase().endsWith('.png') && 
+                      file.type === 'file'
+                    );
+
+                    if (imageFiles.length > 0) {
+                      projectImage = `https://raw.githubusercontent.com/${githubUsername}/${project.name}/${branch}/${imageFiles[0].name}`;
+                      break; // Found an image, stop trying other branches
+                    }
+                  } catch (branchError) {
+                    // Continue to next branch
+                    continue;
+                  }
+                }
+                
+                if (!projectImage) {
+                  console.log(`No image found for ${project.name} in any branch`);
+                }
               }
 
               return {
@@ -405,7 +442,7 @@ function App() {
                       {project.projectImage && (
                         <CardMedia
                           component="img"
-                          height="600"
+                          // height="number"
                           image={project.projectImage}
                           alt={`${project.name} preview`}
                           sx={{
