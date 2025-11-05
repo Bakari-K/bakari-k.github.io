@@ -40,48 +40,107 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import './App.css';
 
-// Create a custom theme
+// Modern minimalist theme inspired by Apple and startups
 const theme = createTheme({
   palette: {
+    mode: 'light',
     primary: {
-      main: '#667eea',
+      main: '#0A0A0A',
+      light: '#1A1A1A',
     },
     secondary: {
-      main: '#764ba2',
+      main: '#0066FF',
+      light: '#3384FF',
     },
     background: {
-      default: '#f5f7fa',
+      default: '#FFFFFF',
+      paper: '#F5F5F7',
+    },
+    text: {
+      primary: '#1D1D1F',
+      secondary: '#6E6E73',
     },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     h1: {
       fontWeight: 700,
-      fontSize: '3.5rem',
-      background: 'linear-gradient(45deg, #f8f8f8ff 30%, #764ba2 90%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
+      fontSize: '4.5rem',
+      letterSpacing: '-0.04em',
+      lineHeight: 1.1,
+      color: '#1D1D1F',
     },
     h2: {
       fontWeight: 600,
-      fontSize: '2.5rem',
-      marginBottom: '2rem',
+      fontSize: '3rem',
+      letterSpacing: '-0.03em',
+      lineHeight: 1.2,
+      color: '#1D1D1F',
+      marginBottom: '3rem',
     },
     h4: {
       fontWeight: 600,
+      letterSpacing: '-0.02em',
+      fontSize: '2rem',
+    },
+    h6: {
+      fontWeight: 600,
+      letterSpacing: '-0.01em',
+      fontSize: '1.125rem',
+    },
+    body1: {
+      fontSize: '1.125rem',
+      lineHeight: 1.7,
+      color: '#1D1D1F',
+    },
+    body2: {
+      fontSize: '0.95rem',
+      lineHeight: 1.6,
+      color: '#6E6E73',
     },
   },
   components: {
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+          borderRadius: 20,
+          backgroundColor: '#FFFFFF',
+          border: '1px solid rgba(0, 0, 0, 0.06)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
             transform: 'translateY(-8px)',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.08)',
+            borderColor: 'rgba(0, 102, 255, 0.2)',
           },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          borderRadius: 12,
+          fontSize: '1rem',
+          fontWeight: 500,
+          padding: '12px 28px',
+          letterSpacing: '-0.01em',
+        },
+        contained: {
+          boxShadow: 'none',
+          '&:hover': {
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          fontWeight: 500,
+          fontSize: '0.875rem',
+          letterSpacing: '-0.01em',
         },
       },
     },
@@ -92,31 +151,42 @@ function App() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [displayedText, setDisplayedText] = useState('');
+  const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
 
-  // Replace with your GitHub username
   const githubUsername = 'Bakari-K';
+  
+  // Roles to cycle through
+  const roles = [
+    'an engineer',
+    'a scientist',
+    'a researcher',
+    'a scholar',
+    'a leader',
+    'a developer',
+    'an innovator'
+  ];
 
-  // Experience data
   const experienceData = [
     {
       title: "Undergraduate Researcher",
       company: "Gator Glaciology Lab",
       period: "August 2025 - Present",
-      description: "Using novel geophysical and machine learning techniques to map the cavities beneath Antarctica's ice shelves. Utilizing Bayesian statistics and Markov chain Monte Carlo approaches to analyze subglacial environments.",
+      description: "Using novel geophysical and geostastical machine learning techniques to map the bedrock beneath Antarctica's ice shelves. Exploring stochastic approaches by combining Markov chain Monte Carlo with Sequential Gaussian Simulation to generate realistic topography that combines mass conservation geophysics with glaciological realism. These approaches allow for climate scientist to more effectively quantify uncertainty in ice sheet models to better predict sea level rise.",
       icon: <AcUnit />,
     },
     {
       title: "Undergraduate Researcher",
       company: "GatorSense - The Machine Learning and Sensing Lab",
       period: "June 2025 - Present",
-      description: "Developing a machine learning application for estimating the phenotypes of plant roots from minirhizotron images. Utilizing scikit-learn, OpenCV, and NumPy for algorithmic analysis through classicical machine learning approaches. Accelerating training through Linux commands ran on the HiPerGator supercomputer.",
+      description: "Developing a computer vision application for estimating the phenotypes of plant roots from minirhizotron images. Utilizing scikit-learn, OpenCV, and NumPy for algorithmic analysis through classicical machine learning approaches. Accelerating training through Linux commands ran on the HiPerGator supercomputer. Contributing to greater deep learning pipeline for switchgrass root analysis to allow for plant scientists to better understand the effects of root phenotypes on biomass production.",
       icon: <Grass />,
     }
   ];
 
-  // Leadership & Involvement data
   const leadershipData = [
     {
       title: "General Body Member",
@@ -149,22 +219,18 @@ function App() {
           .filter(repo => !repo.fork && repo.description)
           .sort((a, b) => b.stargazers_count - a.stargazers_count);
 
-        // Fetch languages and check for images for each project
         const projectsWithDetails = await Promise.all(
           filteredProjects.map(async (project) => {
             try {
-              // Fetch languages
               const languagesResponse = await octokit.rest.repos.listLanguages({
                 owner: githubUsername,
                 repo: project.name,
               });
 
-              // Check for image files in root directory
               let projectImage = null;
-              let defaultBranch = 'main'; // Start with main branch
+              let defaultBranch = 'main';
               
               try {
-                // First, get repository info to determine the default branch
                 const repoResponse = await octokit.rest.repos.get({
                   owner: githubUsername,
                   repo: project.name,
@@ -186,7 +252,6 @@ function App() {
                   projectImage = `https://raw.githubusercontent.com/${githubUsername}/${project.name}/${defaultBranch}/${imageFiles[0].name}`;
                 }
               } catch (imageError) {
-                // If default branch fails, try the other common branch names
                 const branchesToTry = defaultBranch === 'main' ? ['master'] : ['main'];
                 
                 for (const branch of branchesToTry) {
@@ -205,10 +270,9 @@ function App() {
 
                     if (imageFiles.length > 0) {
                       projectImage = `https://raw.githubusercontent.com/${githubUsername}/${project.name}/${branch}/${imageFiles[0].name}`;
-                      break; // Found an image, stop trying other branches
+                      break;
                     }
                   } catch (branchError) {
-                    // Continue to next branch
                     continue;
                   }
                 }
@@ -246,30 +310,63 @@ function App() {
     fetchProjects();
   }, [githubUsername]);
 
+  // Typewriter effect
+  useEffect(() => {
+    const currentRole = roles[currentRoleIndex];
+    const typingSpeed = isDeleting ? 50 : 100;
+    const pauseTime = isDeleting ? 500 : 2000;
+
+    if (!isDeleting && displayedText === currentRole) {
+      // Pause before deleting
+      const timeout = setTimeout(() => setIsDeleting(true), pauseTime);
+      return () => clearTimeout(timeout);
+    }
+
+    if (isDeleting && displayedText === '') {
+      // Move to next role
+      setIsDeleting(false);
+      setCurrentRoleIndex((prev) => (prev + 1) % roles.length);
+      return;
+    }
+
+    // Type or delete character
+    const timeout = setTimeout(() => {
+      setDisplayedText(prev => {
+        if (isDeleting) {
+          return currentRole.substring(0, prev.length - 1);
+        } else {
+          return currentRole.substring(0, prev.length + 1);
+        }
+      });
+    }, typingSpeed);
+
+    return () => clearTimeout(timeout);
+  }, [displayedText, isDeleting, currentRoleIndex, roles]);
+
   const getLanguageColor = (language) => {
     const colors = {
-      JavaScript: '#f7df1e',
-      Python: '#3776ab',
-      TypeScript: '#3178c6',
-      Java: '#ed8b00',
-      'C++': '#00599c',
-      React: '#61dafb',
-      Vue: '#4fc08d',
-      HTML: '#e34f26',
-      CSS: '#1572b6',
-      Go: '#00add8',
-      Rust: '#dea584',
-      Swift: '#fa7343',
-      Kotlin: '#7f52ff',
+      JavaScript: '#F7DF1E',
+      Python: '#3776AB',
+      TypeScript: '#3178C6',
+      Java: '#ED8B00',
+      'C++': '#00599C',
+      React: '#61DAFB',
+      Vue: '#4FC08D',
+      HTML: '#E34F26',
+      CSS: '#1572B6',
+      Go: '#00ADD8',
+      Rust: '#DEA584',
+      Swift: '#FA7343',
+      Kotlin: '#7F52FF',
       'C#': '#239120',
-      PHP: '#777bb4',
-      Ruby: '#cc342d',
-      Dart: '#0175c2',
-      Scala: '#dc322f',
-      Shell: '#89e051',
-      Dockerfile: '#384d54'
+      PHP: '#777BB4',
+      Ruby: '#CC342D',
+      Dart: '#0175C2',
+      Scala: '#DC322F',
+      Shell: '#89E051',
+      Dockerfile: '#384D54'
     };
-    return colors[language] || '#667eea';
+    return colors[language] || '#0066FF';
   };
 
   const getTopLanguages = (languages) => {
@@ -277,8 +374,8 @@ function App() {
     const total = entries.reduce((sum, [, bytes]) => sum + bytes, 0);
     
     return entries
-      .sort((a, b) => b[1] - a[1]) // Sort by bytes (descending)
-      .slice(0, 4) // Take top 4 languages
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
       .map(([name, bytes]) => ({
         name,
         percentage: ((bytes / total) * 100).toFixed(1)
@@ -288,32 +385,67 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div className="App">
+      <Box sx={{ bgcolor: '#FFFFFF' }}>
         {/* Hero Section */}
         <Box
           sx={{
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            color: 'white',
-            py: { xs: 8, md: 12 },
+            minHeight: '90vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             position: 'relative',
             overflow: 'hidden',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: `
-                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%)
-              `,
-            },
+            bgcolor: '#FAFAFA',
           }}
         >
-          <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
-            <Typography variant="h1" component="h1" gutterBottom>
-              Bakari Kerr
+          <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, textAlign: 'center', py: { xs: 8, md: 0 } }}>
+            <Typography 
+              variant="h1" 
+              component="h1" 
+              gutterBottom
+              sx={{
+                fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4.5rem' },
+                mb: 3,
+                minHeight: { xs: '120px', sm: '140px', md: '160px' },
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Box component="span">
+                Bakari Kerr is{' '}
+                <Box 
+                  component="span" 
+                  sx={{ 
+                    color: '#0066FF',
+                    position: 'relative',
+                    '&::after': {
+                      content: '"|"',
+                      position: 'absolute',
+                      right: '-8px',
+                      animation: 'blink 1s step-end infinite',
+                    },
+                    '@keyframes blink': {
+                      '0%, 100%': { opacity: 1 },
+                      '50%': { opacity: 0 },
+                    },
+                  }}
+                >
+                  {displayedText}
+                </Box>
+              </Box>
+            </Typography>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                mb: 5, 
+                maxWidth: '600px', 
+                mx: 'auto',
+                color: 'text.secondary',
+                fontSize: { xs: '1rem', md: '1.125rem' },
+              }}
+            >
+              Computer Science Student • Machine Learning Researcher • Full-Stack Developer
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button
@@ -321,71 +453,109 @@ function App() {
                 size="large"
                 href={`https://github.com/${githubUsername}`}
                 sx={{ 
-                  bgcolor: 'rgba(255,255,255,0.2)', 
+                  bgcolor: '#0A0A0A',
                   color: 'white',
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
+                  '&:hover': { 
+                    bgcolor: '#1A1A1A',
+                    transform: 'scale(1.02)',
+                  },
+                  transition: 'all 0.3s ease',
                 }}
                 startIcon={<GitHub />}
               >
                 View GitHub
               </Button>
               <Button
-                variant="contained"
+                variant="outlined"
                 size="large"
                 href="https://www.linkedin.com/in/bakari-kerr"
                 sx={{ 
-                  bgcolor: 'rgba(255,255,255,0.2)', 
-                  color: 'white',
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
+                  borderColor: '#0A0A0A',
+                  color: '#0A0A0A',
+                  '&:hover': { 
+                    borderColor: '#0066FF',
+                    color: '#0066FF',
+                    bgcolor: 'rgba(0, 102, 255, 0.04)',
+                  },
+                  transition: 'all 0.3s ease',
                 }}
                 startIcon={<LinkedIn />}
               >
-                Follow Me 
+                Connect on LinkedIn
               </Button>
             </Box>
           </Container>
         </Box>
 
         {/* About Section */}
-        <Container maxWidth="lg" sx={{ py: 8 }}>
-          <Typography variant="h2" component="h2" textAlign="center" gutterBottom>
+        <Container maxWidth="md" sx={{ py: { xs: 8, md: 12 } }}>
+          <Typography 
+            variant="h2" 
+            component="h2" 
+            textAlign="center" 
+            gutterBottom
+            sx={{ fontSize: { xs: '2rem', md: '3rem' } }}
+          >
             About Me
           </Typography>
           <Paper
             elevation={0}
             sx={{
-              p: 4,
+              p: { xs: 3, md: 5 },
               textAlign: 'center',
-              background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
-              borderRadius: 3,
+              bgcolor: 'transparent',
+              borderRadius: 0,
             }}
           >
-            <Typography variant="h6" component="p" sx={{ mb: 3, lineHeight: 1.8, color: 'text.secondary' }}>
-              I am a Computer Science undergraduate student at the University of Florida, passionate about full-stack development and data science. I love exploring the various ways artificial intelligence and machine learning can be applied to solve real-world problems.
-            </Typography>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                lineHeight: 1.8, 
+                color: 'text.secondary',
+                fontSize: { xs: '1rem', md: '1.125rem' },
+              }}
+            >
+I am Bakari Kerr, a Computer Science major at the University of Florida with a deep passion for artificial intelligence and machine learning. I am excited about the potential for AI and ML to drive innovation and solve real-world challenges. As an active member of the National Society of Black Engineers (NSBE) and ColorStack, I am proud to be part of communities that emphasize diversity, empowerment, and excellence in tech.
+
+In addition to my academic pursuits, I am always looking for opportunities to grow both as a developer and researcher, particularly in AI/ML, and I am committed to using my skills to make a positive impact. Whether it is through mentorship, collaboration, or involvement in community-driven projects, I am passionate about giving back and supporting others on their tech journey.
+
+I am always eager to connect with like-minded individuals, organizations, and innovators who share a commitment to advancing technology in ways that foster equity and drive meaningful change.            </Typography>
           </Paper>
         </Container>
 
         {/* Experience Section */}
-        <Box sx={{ bgcolor: 'background.default', py: 8 }}>
+        <Box sx={{ bgcolor: '#FAFAFA', py: { xs: 8, md: 12 } }}>
           <Container maxWidth="lg">
-            <Typography variant="h2" component="h2" textAlign="center" gutterBottom>
+            <Typography 
+              variant="h2" 
+              component="h2" 
+              textAlign="center" 
+              gutterBottom
+              sx={{ fontSize: { xs: '2rem', md: '3rem' } }}
+            >
               Experience
             </Typography>
-            <Grid container spacing={4}>
+            <Grid container spacing={3}>
               {experienceData.map((exp, index) => (
-                <Grid item xs={12} md={4} key={index}>
+                <Grid item xs={12} md={6} key={index}>
                   <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
+                    <CardContent sx={{ flexGrow: 1, p: 4 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
+                        <Avatar 
+                          sx={{ 
+                            bgcolor: '#0066FF', 
+                            mr: 2,
+                            width: 48,
+                            height: 48,
+                          }}
+                        >
                           {exp.icon}
                         </Avatar>
-                        <Box>
-                          <Typography variant="h6" component="h3">
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="h6" component="h3" sx={{ mb: 0.5 }}>
                             {exp.title}
                           </Typography>
-                          <Typography color="primary" variant="subtitle2">
+                          <Typography color="text.secondary" variant="body2" sx={{ fontWeight: 500 }}>
                             {exp.company}
                           </Typography>
                         </Box>
@@ -393,11 +563,14 @@ function App() {
                       <Chip
                         label={exp.period}
                         size="small"
-                        sx={{ mb: 2 }}
-                        color="secondary"
-                        variant="outlined"
+                        sx={{ 
+                          mb: 2,
+                          bgcolor: 'rgba(0, 0, 0, 0.04)',
+                          color: 'text.secondary',
+                          border: 'none',
+                        }}
                       />
-                      <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
                         {exp.description}
                       </Typography>
                     </CardContent>
@@ -409,25 +582,39 @@ function App() {
         </Box>
 
         {/* Projects Section */}
-        <Container maxWidth="lg" sx={{ py: 8 }}>
-          <Typography variant="h2" component="h2" textAlign="center" gutterBottom>
+        <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
+          <Typography 
+            variant="h2" 
+            component="h2" 
+            textAlign="center" 
+            gutterBottom
+            sx={{ fontSize: { xs: '2rem', md: '3rem' } }}
+          >
             Featured Projects
           </Typography>
           
           {loading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-              <CircularProgress size={60} />
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+              <CircularProgress size={48} sx={{ color: '#0A0A0A' }} />
             </Box>
           )}
           
           {error && (
-            <Alert severity="error" sx={{ mb: 4 }}>
+            <Alert 
+              severity="error" 
+              sx={{ 
+                mb: 4,
+                borderRadius: 2,
+                border: '1px solid',
+                borderColor: 'error.light',
+              }}
+            >
               {error}
             </Alert>
           )}
           
           {!loading && !error && (
-            <Grid container spacing={4}>
+            <Grid container spacing={3}>
               {projects.map((project) => {
                 const topLanguages = getTopLanguages(project.languages);
                 
@@ -437,45 +624,41 @@ function App() {
                       height: '100%', 
                       display: 'flex', 
                       flexDirection: 'column',
-                      width: '100%' // Ensure consistent width
                     }}>
                       {project.projectImage && (
                         <CardMedia
                           component="img"
-                          // height="number"
                           image={project.projectImage}
                           alt={`${project.name} preview`}
                           sx={{
                             objectFit: 'cover',
-                            borderRadius: '16px 16px 0 0'
+                            //height: 200,
+                            bgcolor: '#F5F5F7',
                           }}
                           onError={(e) => {
                             e.target.style.display = 'none';
                           }}
                         />
                       )}
-                      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                        <Typography variant="h6" component="h3" gutterBottom>
+                      <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 3 }}>
+                        <Typography variant="h6" component="h3" gutterBottom sx={{ mb: 1.5 }}>
                           {project.name}
                         </Typography>
                         <Typography
                           variant="body2"
                           color="text.secondary"
                           sx={{ 
-                            mb: 2, 
-                            lineHeight: 1.6
+                            mb: 2.5, 
+                            lineHeight: 1.6,
+                            flexGrow: 1,
                           }}
                         >
                           {project.description || 'No description available'}
                         </Typography>
                         
-                        {/* Languages Section */}
                         {topLanguages.length > 0 && (
                           <Box sx={{ mb: 2 }}>
-                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                              Languages:
-                            </Typography>
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                               {topLanguages.map((lang) => (
                                 <Chip
                                   key={lang.name}
@@ -484,8 +667,13 @@ function App() {
                                   sx={{
                                     bgcolor: getLanguageColor(lang.name),
                                     color: 'white',
-                                    fontWeight: 'bold',
-                                    fontSize: '0.7rem'
+                                    fontWeight: 600,
+                                    fontSize: '0.75rem',
+                                    border: 'none',
+                                    transition: 'transform 0.2s ease',
+                                    '&:hover': {
+                                      transform: 'scale(1.1)',
+                                    },
                                   }}
                                 />
                               ))}
@@ -493,21 +681,30 @@ function App() {
                           </Box>
                         )}
                         
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 'auto' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-                            <Star fontSize="small" />
-                            <Typography variant="body2">{project.stargazers_count}</Typography>
+                            <Star fontSize="small" sx={{ fontSize: 18 }} />
+                            <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                              {project.stargazers_count}
+                            </Typography>
                           </Box>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
-                            <CallSplit fontSize="small" />
-                            <Typography variant="body2">{project.forks_count}</Typography>
+                            <CallSplit fontSize="small" sx={{ fontSize: 18 }} />
+                            <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                              {project.forks_count}
+                            </Typography>
                           </Box>
                         </Box>
                       </CardContent>
-                      <CardActions>
+                      <CardActions sx={{ p: 3, pt: 0 }}>
                         <Button
-                          size="small"
-                          color="primary"
+                          size="medium"
+                          sx={{ 
+                            color: '#0A0A0A',
+                            '&:hover': { 
+                              bgcolor: 'rgba(0, 0, 0, 0.04)',
+                            },
+                          }}
                           startIcon={<Launch />}
                           href={project.html_url}
                           target="_blank"
@@ -525,25 +722,38 @@ function App() {
         </Container>
 
         {/* Leadership & Involvement Section */}
-        <Box sx={{ bgcolor: 'background.default', py: 8 }}>
+        <Box sx={{ bgcolor: '#FAFAFA', py: { xs: 8, md: 12 } }}>
           <Container maxWidth="lg">
-            <Typography variant="h2" component="h2" textAlign="center" gutterBottom>
+            <Typography 
+              variant="h2" 
+              component="h2" 
+              textAlign="center" 
+              gutterBottom
+              sx={{ fontSize: { xs: '2rem', md: '3rem' } }}
+            >
               Leadership & Involvement
             </Typography>
-            <Grid container spacing={4}>
+            <Grid container spacing={3}>
               {leadershipData.map((item, index) => (
-                <Grid item xs={12} md={4} key={index}>
+                <Grid item xs={12} md={6} key={index}>
                   <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                        <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
+                    <CardContent sx={{ flexGrow: 1, p: 4 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
+                        <Avatar 
+                          sx={{ 
+                            bgcolor: '#0066FF', 
+                            mr: 2,
+                            width: 48,
+                            height: 48,
+                          }}
+                        >
                           {item.icon}
                         </Avatar>
-                        <Box>
-                          <Typography variant="h6" component="h3">
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="h6" component="h3" sx={{ mb: 0.5 }}>
                             {item.title}
                           </Typography>
-                          <Typography color="primary" variant="subtitle2">
+                          <Typography color="text.secondary" variant="body2" sx={{ fontWeight: 500 }}>
                             {item.company}
                           </Typography>
                         </Box>
@@ -551,11 +761,14 @@ function App() {
                       <Chip
                         label={item.period}
                         size="small"
-                        sx={{ mb: 2 }}
-                        color="secondary"
-                        variant="outlined"
+                        sx={{ 
+                          mb: 2,
+                          bgcolor: 'rgba(0, 0, 0, 0.04)',
+                          color: 'text.secondary',
+                          border: 'none',
+                        }}
                       />
-                      <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
                         {item.description}
                       </Typography>
                     </CardContent>
@@ -570,48 +783,79 @@ function App() {
         <Box
           component="footer"
           sx={{
-            bgcolor: 'grey.900',
+            bgcolor: '#0A0A0A',
             color: 'white',
-            py: 6,
+            py: { xs: 6, md: 8 },
             textAlign: 'center',
           }}
         >
           <Container maxWidth="lg">
-            <Typography variant="h4" component="h3" gutterBottom>
+            <Typography 
+              variant="h4" 
+              component="h3" 
+              gutterBottom
+              sx={{ 
+                fontSize: { xs: '1.75rem', md: '2.125rem' },
+                fontWeight: 600,
+                mb: 2,
+              }}
+            >
               Let's Connect
             </Typography>
-            <Typography variant="body1" sx={{ mb: 4, opacity: 0.8 }}>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                mb: 4, 
+                color: 'rgba(255, 255, 255, 0.7)',
+                maxWidth: '500px',
+                mx: 'auto',
+              }}
+            >
               Feel free to connect with me on LinkedIn or check out my projects on GitHub!
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 5 }}>
               <IconButton
-                color="inherit"
                 href={`https://github.com/${githubUsername}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 size="large"
-                sx={{ '&:hover': { color: 'primary.main' } }}
+                sx={{ 
+                  color: 'white',
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  '&:hover': { 
+                    bgcolor: 'rgba(255, 255, 255, 0.2)',
+                    transform: 'scale(1.1)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
               >
                 <GitHub />
               </IconButton>
               <IconButton
-                color="inherit"
                 href="https://linkedin.com/in/bakari-kerr"
                 target="_blank"
                 rel="noopener noreferrer"
                 size="large"
-                sx={{ '&:hover': { color: 'primary.main' } }}
+                sx={{ 
+                  color: 'white',
+                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  '&:hover': { 
+                    bgcolor: 'rgba(255, 255, 255, 0.2)',
+                    transform: 'scale(1.1)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
               >
                 <LinkedIn />
               </IconButton>
             </Box>
-            <Divider sx={{ bgcolor: 'grey.700', mb: 3 }} />
-            <Typography variant="body2" sx={{ opacity: 0.7 }}>
+            <Divider sx={{ bgcolor: 'rgba(255, 255, 255, 0.1)', mb: 3 }} />
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)' }}>
               © 2025 Bakari Kerr
             </Typography>
           </Container>
         </Box>
-      </div>
+      </Box>
     </ThemeProvider>
   );
 }

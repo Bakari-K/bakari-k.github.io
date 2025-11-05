@@ -1,4 +1,4 @@
-/* Import Google Fonts */
+/* Import Modern System Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 .App {
@@ -6,30 +6,29 @@
   position: relative;
 }
 
-/* Enhanced Background Patterns */
+/* Minimalist Background */
 body {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: #FFFFFF;
   min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Custom scrollbar with smoother design */
+/* Minimal scrollbar design */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(241, 245, 249, 0.8);
-  border-radius: 10px;
+  background: #F5F5F7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #D1D1D6;
   border-radius: 10px;
-  border: 2px solid rgba(241, 245, 249, 0.8);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  background: #A1A1A6;
 }
 
 /* Smooth scroll behavior */
@@ -37,11 +36,11 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Enhanced animations */
+/* Refined animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -52,7 +51,7 @@ html {
 @keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: translateX(-50px);
+    transform: translateX(-30px);
   }
   to {
     opacity: 1;
@@ -63,20 +62,11 @@ html {
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(50px);
+    transform: translateX(30px);
   }
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200px 0;
-  }
-  100% {
-    background-position: calc(200px + 100%) 0;
   }
 }
 
@@ -85,54 +75,26 @@ html {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes glow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+    transform: translateY(-6px);
   }
 }
 
 /* Apply staggered animations to sections */
-.App > *:nth-child(1) { animation: fadeInUp 0.8s ease-out 0.1s both; }
-.App > *:nth-child(2) { animation: fadeInUp 0.8s ease-out 0.2s both; }
-.App > *:nth-child(3) { animation: fadeInUp 0.8s ease-out 0.3s both; }
-.App > *:nth-child(4) { animation: fadeInUp 0.8s ease-out 0.4s both; }
-.App > *:nth-child(5) { animation: fadeInUp 0.8s ease-out 0.5s both; }
+.App > *:nth-child(1) { animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both; }
+.App > *:nth-child(2) { animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both; }
+.App > *:nth-child(3) { animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both; }
+.App > *:nth-child(4) { animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both; }
+.App > *:nth-child(5) { animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both; }
 
-/* Enhanced focus styles for accessibility */
+/* Minimal focus styles for accessibility */
 button:focus,
 a:focus {
-  outline: 3px solid #667eea;
-  outline-offset: 3px;
-  border-radius: 4px;
+  outline: 2px solid #0066FF;
+  outline-offset: 4px;
+  border-radius: 8px;
 }
 
-/* Custom gradient text utility with animation */
-.gradient-text {
-  background: linear-gradient(45deg, #667eea 30%, #764ba2 90%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  background-size: 200% 200%;
-  animation: gradientShift 3s ease-in-out infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-/* Enhanced loading animation */
+/* Clean loading animation */
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -143,65 +105,39 @@ a:focus {
 }
 
 .loading-spinner {
-  animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+  animation: spin 1s linear infinite;
 }
 
-/* Card hover effects with enhanced transitions */
+/* Card hover effects with subtle transitions */
 .MuiCard-root {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative;
   overflow: hidden;
-}
-
-.MuiCard-root::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  transition: left 0.5s;
-  z-index: 1;
-}
-
-.MuiCard-root:hover::before {
-  left: 100%;
+  background: #FFFFFF !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
 }
 
 .MuiCard-root:hover {
-  transform: translateY(-12px) scale(1.02);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08) !important;
+  border-color: rgba(0, 102, 255, 0.2) !important;
 }
 
-/* Enhanced button styles */
+/* Button styles */
 .MuiButton-root {
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-  position: relative;
-  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-transform: none !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em !important;
 }
 
-.MuiButton-root::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transition: all 0.3s;
-  transform: translate(-50%, -50%);
+.MuiButton-contained {
+  box-shadow: none !important;
 }
 
-.MuiButton-root:hover::before {
-  width: 300px;
-  height: 300px;
+.MuiButton-contained:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
 }
 
 /* Avatar enhancements */
@@ -209,69 +145,32 @@ a:focus {
   transition: all 0.3s ease;
 }
 
-.MuiAvatar-root:hover {
-  animation: float 2s ease-in-out infinite;
-}
-
-/* Navigation bar enhancements */
-.MuiAppBar-root {
-  backdrop-filter: blur(20px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
 /* Chip enhancements */
 .MuiChip-root {
   transition: all 0.3s ease !important;
-}
-
-.MuiChip-root:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px !important;
+  font-weight: 500 !important;
 }
 
 /* Typography enhancements */
 h1, h2, h3, h4, h5, h6 {
-  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #1D1D1F;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+h1 {
+  font-weight: 700 !important;
+  letter-spacing: -0.04em !important;
 }
 
 /* Icon button enhancements */
 .MuiIconButton-root {
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .MuiIconButton-root:hover {
-  animation: glow 1.5s ease-in-out infinite;
-}
-
-/* Section dividers */
-.section-divider {
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  margin: 0 auto 3rem;
-  border-radius: 2px;
-  position: relative;
-}
-
-.section-divider::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
-  border-radius: 4px;
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.section-divider:hover::after {
-  opacity: 0.3;
+  transform: scale(1.1);
 }
 
 /* Responsive design improvements */
@@ -281,7 +180,7 @@ h1, h2, h3, h4, h5, h6 {
   }
   
   .MuiCard-root:hover {
-    transform: translateY(-6px) scale(1.01);
+    transform: translateY(-6px);
   }
   
   .mobile-spacing {
@@ -321,10 +220,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .gradient-text,
   h1, h2, h3, h4, h5, h6 {
-    background: none !important;
-    -webkit-text-fill-color: initial !important;
     color: #000 !important;
     font-weight: 700;
   }
