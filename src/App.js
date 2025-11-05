@@ -154,6 +154,7 @@ function App() {
   const [displayedText, setDisplayedText] = useState('');
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
 
@@ -189,18 +190,18 @@ function App() {
 
   const leadershipData = [
     {
+      title: "Pre-Professional Director",
+      company: "Trailblazers Initiative",
+      period: "April 2025 - Present",
+      description: "Supporting 33 underrepresented first-year students through the Trailblazers Intitiative of the National Society of Black Engineers. Exposing students to career opportunities, fellowships, internships, and scholarships and helping them navigate the professional development process through resume reviews, mock interviews, and networking events with industry professionals and alumni, resulting in students gaining internship offers at companies such as NextEra Energy and Amazon.",
+      icon: <School />,
+    },
+    {
       title: "General Body Member",
       company: "National Society of Black Engineers",
       period: "August 2024 - Present",
       description: "General body member of NSBE. Have helped conduct and organize various volunteering events and initiatives, such as volunteering at Gainesville's Porter's Quarters community farm, and setting up a food drive with Food4Kids.",
       icon: <Groups />,
-    },
-    {
-      title: "Pre-Professional Director",
-      company: "Trailblazers Initiative",
-      period: "April 2025 - Present",
-      description: "Leading initiatives to support underrepresented students in STEM through mentorship, workshops, and community building. Organizing events to connect students with industry professionals and resources",
-      icon: <School />,
     }
   ];
 
@@ -343,6 +344,34 @@ function App() {
     return () => clearTimeout(timeout);
   }, [displayedText, isDeleting, currentRoleIndex, roles]);
 
+  // Scroll to top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offset = 80; // Account for fixed header
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const getLanguageColor = (language) => {
     const colors = {
       JavaScript: '#F7DF1E',
@@ -386,6 +415,139 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ bgcolor: '#FFFFFF' }}>
+        {/* Fixed Header Navigation */}
+        <Box
+          component="nav"
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bgcolor: 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(20px)',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+            zIndex: 1000,
+            py: 2,
+          }}
+        >
+          <Container maxWidth="lg">
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontWeight: 700,
+                  color: '#1D1D1F',
+                  cursor: 'pointer',
+                  position: 'absolute',
+                  left: 0,
+                }}
+                onClick={scrollToTop}
+              >
+                BK
+              </Typography>
+              <Box sx={{ display: 'flex', gap: { xs: 2, md: 4 } }}>
+                <Button
+                  onClick={() => scrollToSection('about')}
+                  sx={{
+                    color: '#1D1D1F',
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    fontSize: { xs: '0.875rem', md: '1rem' },
+                    '&:hover': {
+                      bgcolor: 'rgba(0, 102, 255, 0.04)',
+                      color: '#0066FF',
+                    },
+                  }}
+                >
+                  About
+                </Button>
+                <Button
+                  onClick={() => scrollToSection('experience')}
+                  sx={{
+                    color: '#1D1D1F',
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    fontSize: { xs: '0.875rem', md: '1rem' },
+                    '&:hover': {
+                      bgcolor: 'rgba(0, 102, 255, 0.04)',
+                      color: '#0066FF',
+                    },
+                  }}
+                >
+                  Experience
+                </Button>
+                <Button
+                  onClick={() => scrollToSection('projects')}
+                  sx={{
+                    color: '#1D1D1F',
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    fontSize: { xs: '0.875rem', md: '1rem' },
+                    '&:hover': {
+                      bgcolor: 'rgba(0, 102, 255, 0.04)',
+                      color: '#0066FF',
+                    },
+                  }}
+                >
+                  Projects
+                </Button>
+                <Button
+                  onClick={() => scrollToSection('leadership')}
+                  sx={{
+                    color: '#1D1D1F',
+                    textTransform: 'none',
+                    fontWeight: 500,
+                    fontSize: { xs: '0.875rem', md: '1rem' },
+                    '&:hover': {
+                      bgcolor: 'rgba(0, 102, 255, 0.04)',
+                      color: '#0066FF',
+                    },
+                  }}
+                >
+                  Leadership
+                </Button>
+              </Box>
+            </Box>
+          </Container>
+        </Box>
+
+        {/* Scroll to Top Button */}
+        <IconButton
+          onClick={scrollToTop}
+          sx={{
+            position: 'fixed',
+            bottom: 32,
+            right: 32,
+            bgcolor: '#0A0A0A',
+            color: 'white',
+            width: 56,
+            height: 56,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+            opacity: showScrollTop ? 1 : 0,
+            visibility: showScrollTop ? 'visible' : 'hidden',
+            transition: 'all 0.3s ease',
+            zIndex: 999,
+            '&:hover': {
+              bgcolor: '#1A1A1A',
+              transform: 'translateY(-4px)',
+              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
+            },
+          }}
+        >
+          <Box
+            component="svg"
+            sx={{ width: 24, height: 24 }}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </Box>
+        </IconButton>
+
         {/* Hero Section */}
         <Box
           sx={{
@@ -488,7 +650,7 @@ function App() {
         </Box>
 
         {/* About Section */}
-        <Container maxWidth="md" sx={{ py: { xs: 8, md: 12 } }}>
+        <Container id="about" maxWidth="md" sx={{ py: { xs: 8, md: 12 } }}>
           <Typography 
             variant="h2" 
             component="h2" 
@@ -516,15 +678,14 @@ function App() {
               }}
             >
 I am Bakari Kerr, a Computer Science major at the University of Florida with a deep passion for artificial intelligence and machine learning. I am excited about the potential for AI and ML to drive innovation and solve real-world challenges. As an active member of the National Society of Black Engineers (NSBE) and ColorStack, I am proud to be part of communities that emphasize diversity, empowerment, and excellence in tech.
-
 In addition to my academic pursuits, I am always looking for opportunities to grow both as a developer and researcher, particularly in AI/ML, and I am committed to using my skills to make a positive impact. Whether it is through mentorship, collaboration, or involvement in community-driven projects, I am passionate about giving back and supporting others on their tech journey.
-
-I am always eager to connect with like-minded individuals, organizations, and innovators who share a commitment to advancing technology in ways that foster equity and drive meaningful change.            </Typography>
+I am always eager to connect with like-minded individuals, organizations, and innovators who share a commitment to advancing technology in ways that foster equity and drive meaningful change.
+            </Typography>
           </Paper>
         </Container>
 
         {/* Experience Section */}
-        <Box sx={{ bgcolor: '#FAFAFA', py: { xs: 8, md: 12 } }}>
+        <Box id="experience" sx={{ bgcolor: '#FAFAFA', py: { xs: 8, md: 12 } }}>
           <Container maxWidth="lg">
             <Typography 
               variant="h2" 
@@ -582,7 +743,7 @@ I am always eager to connect with like-minded individuals, organizations, and in
         </Box>
 
         {/* Projects Section */}
-        <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
+        <Container id="projects" maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
           <Typography 
             variant="h2" 
             component="h2" 
@@ -632,7 +793,6 @@ I am always eager to connect with like-minded individuals, organizations, and in
                           alt={`${project.name} preview`}
                           sx={{
                             objectFit: 'cover',
-                            //height: 200,
                             bgcolor: '#F5F5F7',
                           }}
                           onError={(e) => {
@@ -722,7 +882,7 @@ I am always eager to connect with like-minded individuals, organizations, and in
         </Container>
 
         {/* Leadership & Involvement Section */}
-        <Box sx={{ bgcolor: '#FAFAFA', py: { xs: 8, md: 12 } }}>
+        <Box id="leadership" sx={{ bgcolor: '#FAFAFA', py: { xs: 8, md: 12 } }}>
           <Container maxWidth="lg">
             <Typography 
               variant="h2" 
@@ -813,6 +973,71 @@ I am always eager to connect with like-minded individuals, organizations, and in
             >
               Feel free to connect with me on LinkedIn or check out my projects on GitHub!
             </Typography>
+            
+            {/* Footer Navigation Links */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mb: 4, flexWrap: 'wrap' }}>
+              <Button
+                onClick={() => scrollToSection('about')}
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  textTransform: 'none',
+                  fontWeight: 400,
+                  fontSize: '0.95rem',
+                  '&:hover': {
+                    color: 'white',
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                About
+              </Button>
+              <Button
+                onClick={() => scrollToSection('experience')}
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  textTransform: 'none',
+                  fontWeight: 400,
+                  fontSize: '0.95rem',
+                  '&:hover': {
+                    color: 'white',
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                Experience
+              </Button>
+              <Button
+                onClick={() => scrollToSection('projects')}
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  textTransform: 'none',
+                  fontWeight: 400,
+                  fontSize: '0.95rem',
+                  '&:hover': {
+                    color: 'white',
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                Projects
+              </Button>
+              <Button
+                onClick={() => scrollToSection('leadership')}
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  textTransform: 'none',
+                  fontWeight: 400,
+                  fontSize: '0.95rem',
+                  '&:hover': {
+                    color: 'white',
+                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                }}
+              >
+                Leadership
+              </Button>
+            </Box>
+            
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 5 }}>
               <IconButton
                 href={`https://github.com/${githubUsername}`}
