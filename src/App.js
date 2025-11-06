@@ -162,13 +162,13 @@ function App() {
   
   // Roles to cycle through
   const roles = [
-    'an engineer',
-    'a scientist',
-    'a researcher',
-    'a scholar',
-    'a leader',
-    'a developer',
-    'an innovator'
+    'an Engineer',
+    'a Scientist',
+    'a Researcher',
+    'a Scholar',
+    'a Leader',
+    'a Developer',
+    'an Innovator'
   ];
 
   const experienceData = [
@@ -607,7 +607,7 @@ function App() {
                 fontSize: { xs: '1rem', md: '1.125rem' },
               }}
             >
-              Computer Science Student • Machine Learning Researcher • Full-Stack Developer
+              Computer Science Student • Machine Learning Researcher • Full-Stack Developer • AI Enthusiast • Future Tech Leader
             </Typography>
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Button
