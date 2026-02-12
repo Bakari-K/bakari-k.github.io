@@ -1,16 +1,17 @@
-/* Import Modern System Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Import Modern Tech-Forward Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 .App {
   text-align: left;
   position: relative;
 }
 
-/* Minimalist Background */
+/* Tech-Forward Background */
 body {
   background: #FFFFFF;
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  position: relative;
 }
 
 /* Minimal scrollbar design */
@@ -23,12 +24,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D1D1D6;
+  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #A1A1A6;
+  background: linear-gradient(135deg, #FB923C 0%, #F97316 100%);
 }
 
 /* Smooth scroll behavior */
@@ -86,12 +87,13 @@ html {
 .App > *:nth-child(4) { animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both; }
 .App > *:nth-child(5) { animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.5s both; }
 
-/* Minimal focus styles for accessibility */
+/* Tech-forward focus styles for accessibility */
 button:focus,
 a:focus {
-  outline: 2px solid #0066FF;
+  outline: 2px solid #F97316;
   outline-offset: 4px;
   border-radius: 8px;
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
 }
 
 /* Clean loading animation */
@@ -113,31 +115,53 @@ a:focus {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
   position: relative;
   overflow: hidden;
-  background: #FFFFFF !important;
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(249, 115, 22, 0.12) !important;
+  box-shadow: 0 4px 20px rgba(249, 115, 22, 0.08) !important;
 }
 
 .MuiCard-root:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08) !important;
-  border-color: rgba(0, 102, 255, 0.2) !important;
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 48px rgba(249, 115, 22, 0.2) !important;
+  border-color: rgba(249, 115, 22, 0.4) !important;
+  background: rgba(255, 247, 237, 0.8) !important;
 }
 
-/* Button styles */
+/* Enhanced Button styles with ripple effect */
 .MuiButton-root {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   text-transform: none !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   letter-spacing: -0.01em !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.MuiButton-root::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(249, 115, 22, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.MuiButton-root:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .MuiButton-contained {
-  box-shadow: none !important;
+  box-shadow: 0 2px 12px rgba(249, 115, 22, 0.3) !important;
 }
 
 .MuiButton-contained:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 6px 24px rgba(249, 115, 22, 0.4) !important;
+  transform: translateY(-2px);
 }
 
 /* Avatar enhancements */
@@ -153,24 +177,52 @@ a:focus {
 }
 
 /* Typography enhancements */
-h1, h2, h3, h4, h5, h6 {
-  color: #1D1D1F;
+h1, h2, h3, h5, h6 {
+  color: #2D2D35;
   letter-spacing: -0.03em;
-  font-weight: 600;
+  font-weight: 700;
 }
+h4 {
+  color: #F97316;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
 
 h1 {
   font-weight: 700 !important;
   letter-spacing: -0.04em !important;
 }
 
-/* Icon button enhancements */
+/* Subtle text glow effect */
+h1, h2 {
+  text-shadow: 0 0 20px rgba(249, 115, 22, 0.05);
+}
+
+/* Icon button enhancements with rotation */
 .MuiIconButton-root {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .MuiIconButton-root:hover {
-  transform: scale(1.1);
+  transform: scale(1.15) rotate(5deg);
+}
+
+/* Link hover effects */
+a {
+  transition: all 0.3s ease !important;
+  position: relative;
+}
+
+a:hover {
+  color: #F97316 !important;
+  text-decoration: none;
+}
+
+/* Subtle glow on interactive elements */
+.MuiButton-root:hover,
+.MuiIconButton-root:hover {
+  filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.3));
 }
 
 /* Responsive design improvements */

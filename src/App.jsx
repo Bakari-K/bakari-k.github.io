@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Octokit } from '@octokit/rest';
+import { useState, useEffect } from 'react';
+import { Octokit } from 'octokit';
 import {
   Container,
   Typography,
@@ -38,65 +38,67 @@ import {
 } from '@mui/icons-material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import ParticleBackground from './ParticleBackground';
+import SectionDivider from './SectionDivider';
 import './App.css';
 
-// Modern minimalist theme inspired by Apple and startups
+// Modern tech-forward theme with grey background and orange accents
 const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#0A0A0A',
-      light: '#1A1A1A',
+      main: '#2D2D35',
+      light: '#3F3F4A',
     },
     secondary: {
-      main: '#0066FF',
-      light: '#3384FF',
+      main: '#F97316',
+      light: '#FB923C',
     },
     background: {
       default: '#FFFFFF',
       paper: '#F5F5F7',
     },
     text: {
-      primary: '#1D1D1F',
-      secondary: '#6E6E73',
+      primary: '#2D2D35',
+      secondary: '#6B6B75',
     },
   },
   typography: {
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    fontFamily: '"Space Grotesk", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     h1: {
       fontWeight: 700,
       fontSize: '4.5rem',
       letterSpacing: '-0.04em',
       lineHeight: 1.1,
-      color: '#1D1D1F',
+      color: '#2D2D35',
     },
     h2: {
-      fontWeight: 600,
+      fontWeight: 700,
       fontSize: '3rem',
       letterSpacing: '-0.03em',
       lineHeight: 1.2,
-      color: '#1D1D1F',
+      color: '#2D2D35',
       marginBottom: '3rem',
     },
     h4: {
-      fontWeight: 600,
+      fontWeight: 700,
       letterSpacing: '-0.02em',
       fontSize: '2rem',
     },
     h6: {
-      fontWeight: 600,
+      fontWeight: 700,
       letterSpacing: '-0.01em',
       fontSize: '1.125rem',
     },
     body1: {
       fontSize: '1.125rem',
       lineHeight: 1.7,
-      color: '#1D1D1F',
+      color: '#2D2D35',
     },
     body2: {
       fontSize: '0.95rem',
       lineHeight: 1.6,
-      color: '#6E6E73',
+      color: '#6B6B75',
     },
   },
   components: {
@@ -105,13 +107,14 @@ const theme = createTheme({
         root: {
           borderRadius: 20,
           backgroundColor: '#FFFFFF',
-          border: '1px solid rgba(0, 0, 0, 0.06)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+          border: '1px solid rgba(249, 115, 22, 0.12)',
+          boxShadow: '0 4px 20px rgba(249, 115, 22, 0.08)',
           transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
-            transform: 'translateY(-8px)',
-            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.08)',
-            borderColor: 'rgba(0, 102, 255, 0.2)',
+            transform: 'translateY(-8px) scale(1.02)',
+            boxShadow: '0 16px 48px rgba(249, 115, 22, 0.2)',
+            borderColor: 'rgba(249, 115, 22, 0.4)',
+            backgroundColor: 'rgba(255, 247, 237, 0.8)',
           },
         },
       },
@@ -122,14 +125,34 @@ const theme = createTheme({
           textTransform: 'none',
           borderRadius: 12,
           fontSize: '1rem',
-          fontWeight: 500,
+          fontWeight: 600,
           padding: '12px 28px',
           letterSpacing: '-0.01em',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            width: '0',
+            height: '0',
+            borderRadius: '50%',
+            background: 'rgba(249, 115, 22, 0.2)',
+            transform: 'translate(-50%, -50%)',
+            transition: 'width 0.6s, height 0.6s',
+          },
+          '&:hover::before': {
+            width: '300px',
+            height: '300px',
+          },
         },
         contained: {
-          boxShadow: 'none',
+          boxShadow: '0 2px 12px rgba(249, 115, 22, 0.3)',
           '&:hover': {
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
+            boxShadow: '0 6px 24px rgba(249, 115, 22, 0.4)',
+            transform: 'translateY(-2px)',
           },
         },
       },
@@ -138,7 +161,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
-          fontWeight: 500,
+          fontWeight: 600,
           fontSize: '0.875rem',
           letterSpacing: '-0.01em',
         },
@@ -208,20 +231,52 @@ function App() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const octokit = new Octokit();
-        
-        const response = await octokit.rest.repos.listForUser({
-          username: githubUsername,
-          sort: 'updated',
-          per_page: 6,
+        const octokit = new Octokit({
+          auth: import.meta.env.VITE_GITHUB_TOKEN
         });
+        
+        // Fetch pinned repositories using GraphQL
+        console.log('Fetching pinned repos for:', githubUsername);
+        const response = await octokit.graphql(`
+          query {
+            user(login: "${githubUsername}") {
+              pinnedItems(first: 6, types: REPOSITORY) {
+                nodes {
+                  ... on Repository {
+                    id
+                    name
+                    description
+                    url
+                    stargazerCount
+                    forkCount
+                    defaultBranchRef {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `);
 
-        const filteredProjects = response.data
-          .filter(repo => !repo.fork && repo.description)
-          .sort((a, b) => b.stargazers_count - a.stargazers_count);
+        console.log('GraphQL Response:', response);
+
+        if (!response?.user?.pinnedItems?.nodes) {
+          throw new Error('No pinned repositories found');
+        }
+
+        const pinnedRepos = response.user.pinnedItems.nodes.map(repo => ({
+          id: repo.id,
+          name: repo.name,
+          description: repo.description,
+          html_url: repo.url,
+          stargazers_count: repo.stargazerCount,
+          forks_count: repo.forkCount,
+          default_branch: repo.defaultBranchRef?.name || 'main',
+        }));
 
         const projectsWithDetails = await Promise.all(
-          filteredProjects.map(async (project) => {
+          pinnedRepos.map(async (project) => {
             try {
               const languagesResponse = await octokit.rest.repos.listLanguages({
                 owner: githubUsername,
@@ -229,15 +284,9 @@ function App() {
               });
 
               let projectImage = null;
-              let defaultBranch = 'main';
+              let defaultBranch = project.default_branch;
               
               try {
-                const repoResponse = await octokit.rest.repos.get({
-                  owner: githubUsername,
-                  repo: project.name,
-                });
-                defaultBranch = repoResponse.data.default_branch;
-                
                 const contentsResponse = await octokit.rest.repos.getContent({
                   owner: githubUsername,
                   repo: project.name,
@@ -301,8 +350,9 @@ function App() {
 
         setProjects(projectsWithDetails);
       } catch (err) {
-        setError('Failed to fetch GitHub projects. Please check the username and try again.');
         console.error('Error fetching projects:', err);
+        console.error('Error details:', err.message, err.response);
+        setError(`Failed to fetch GitHub projects: ${err.message || 'Please check the username and try again.'}`);
       } finally {
         setLoading(false);
       }
@@ -374,28 +424,28 @@ function App() {
 
   const getLanguageColor = (language) => {
     const colors = {
-      JavaScript: '#F7DF1E',
-      Python: '#3776AB',
-      TypeScript: '#3178C6',
-      Java: '#ED8B00',
-      'C++': '#00599C',
-      React: '#61DAFB',
-      Vue: '#4FC08D',
-      HTML: '#E34F26',
-      CSS: '#1572B6',
-      Go: '#00ADD8',
-      Rust: '#DEA584',
-      Swift: '#FA7343',
-      Kotlin: '#7F52FF',
-      'C#': '#239120',
-      PHP: '#777BB4',
-      Ruby: '#CC342D',
-      Dart: '#0175C2',
-      Scala: '#DC322F',
-      Shell: '#89E051',
-      Dockerfile: '#384D54'
+      JavaScript: '#FB923C',
+      Python: '#F97316',
+      TypeScript: '#EA580C',
+      Java: '#FDBA74',
+      'C++': '#F59E0B',
+      React: '#FB923C',
+      Vue: '#FCD34D',
+      HTML: '#FFA07A',
+      CSS: '#FF8C42',
+      Go: '#F97316',
+      Rust: '#C2410C',
+      Swift: '#FDBA74',
+      Kotlin: '#EA580C',
+      'C#': '#D97706',
+      PHP: '#d0871a',
+      Ruby: '#F97316',
+      Dart: '#FB923C',
+      Scala: '#EA580C',
+      Shell: '#FDBA74',
+      Dockerfile: '#F59E0B'
     };
-    return colors[language] || '#0066FF';
+    return colors[language] || '#F97316';
   };
 
   const getTopLanguages = (languages) => {
@@ -414,7 +464,8 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{ bgcolor: '#FFFFFF' }}>
+      <ParticleBackground />
+      <Box sx={{ position: 'relative', zIndex: 1 }}>
         {/* Fixed Header Navigation */}
         <Box
           component="nav"
@@ -425,7 +476,7 @@ function App() {
             right: 0,
             bgcolor: 'rgba(255, 255, 255, 0.8)',
             backdropFilter: 'blur(20px)',
-            borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+            borderBottom: '1px solid rgba(249, 115, 22, 0.15)',
             zIndex: 1000,
             py: 2,
           }}
@@ -436,10 +487,15 @@ function App() {
                 variant="h6" 
                 sx={{ 
                   fontWeight: 700,
-                  color: '#1D1D1F',
+                  color: '#2D2D35',
                   cursor: 'pointer',
                   position: 'absolute',
                   left: 0,
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    color: '#F97316',
+                    transform: 'scale(1.1)',
+                  },
                 }}
                 onClick={scrollToTop}
               >
@@ -449,13 +505,28 @@ function App() {
                 <Button
                   onClick={() => scrollToSection('about')}
                   sx={{
-                    color: '#1D1D1F',
+                    color: '#2D2D35',
                     textTransform: 'none',
-                    fontWeight: 500,
+                    fontWeight: 600,
                     fontSize: { xs: '0.875rem', md: '1rem' },
+                    position: 'relative',
                     '&:hover': {
-                      bgcolor: 'rgba(0, 102, 255, 0.04)',
-                      color: '#0066FF',
+                      bgcolor: 'rgba(249, 115, 22, 0.08)',
+                      color: '#F97316',
+                    },
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: 0,
+                      left: '50%',
+                      width: '0%',
+                      height: '2px',
+                      bgcolor: '#F97316',
+                      transition: 'all 0.3s ease',
+                      transform: 'translateX(-50%)',
+                    },
+                    '&:hover::after': {
+                      width: '80%',
                     },
                   }}
                 >
@@ -464,13 +535,28 @@ function App() {
                 <Button
                   onClick={() => scrollToSection('experience')}
                   sx={{
-                    color: '#1D1D1F',
+                    color: '#2D2D35',
                     textTransform: 'none',
-                    fontWeight: 500,
+                    fontWeight: 600,
                     fontSize: { xs: '0.875rem', md: '1rem' },
+                    position: 'relative',
                     '&:hover': {
-                      bgcolor: 'rgba(0, 102, 255, 0.04)',
-                      color: '#0066FF',
+                      bgcolor: 'rgba(249, 115, 22, 0.08)',
+                      color: '#F97316',
+                    },
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: 0,
+                      left: '50%',
+                      width: '0%',
+                      height: '2px',
+                      bgcolor: '#F97316',
+                      transition: 'all 0.3s ease',
+                      transform: 'translateX(-50%)',
+                    },
+                    '&:hover::after': {
+                      width: '80%',
                     },
                   }}
                 >
@@ -479,13 +565,28 @@ function App() {
                 <Button
                   onClick={() => scrollToSection('projects')}
                   sx={{
-                    color: '#1D1D1F',
+                    color: '#2D2D35',
                     textTransform: 'none',
-                    fontWeight: 500,
+                    fontWeight: 600,
                     fontSize: { xs: '0.875rem', md: '1rem' },
+                    position: 'relative',
                     '&:hover': {
-                      bgcolor: 'rgba(0, 102, 255, 0.04)',
-                      color: '#0066FF',
+                      bgcolor: 'rgba(249, 115, 22, 0.08)',
+                      color: '#F97316',
+                    },
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: 0,
+                      left: '50%',
+                      width: '0%',
+                      height: '2px',
+                      bgcolor: '#F97316',
+                      transition: 'all 0.3s ease',
+                      transform: 'translateX(-50%)',
+                    },
+                    '&:hover::after': {
+                      width: '80%',
                     },
                   }}
                 >
@@ -494,13 +595,28 @@ function App() {
                 <Button
                   onClick={() => scrollToSection('leadership')}
                   sx={{
-                    color: '#1D1D1F',
+                    color: '#2D2D35',
                     textTransform: 'none',
-                    fontWeight: 500,
+                    fontWeight: 600,
                     fontSize: { xs: '0.875rem', md: '1rem' },
+                    position: 'relative',
                     '&:hover': {
-                      bgcolor: 'rgba(0, 102, 255, 0.04)',
-                      color: '#0066FF',
+                      bgcolor: 'rgba(249, 115, 22, 0.08)',
+                      color: '#F97316',
+                    },
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: 0,
+                      left: '50%',
+                      width: '0%',
+                      height: '2px',
+                      bgcolor: '#F97316',
+                      transition: 'all 0.3s ease',
+                      transform: 'translateX(-50%)',
+                    },
+                    '&:hover::after': {
+                      width: '80%',
                     },
                   }}
                 >
@@ -518,19 +634,19 @@ function App() {
             position: 'fixed',
             bottom: 32,
             right: 32,
-            bgcolor: '#0A0A0A',
+            bgcolor: '#F97316',
             color: 'white',
             width: 56,
             height: 56,
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+            boxShadow: '0 4px 20px rgba(249, 115, 22, 0.4)',
             opacity: showScrollTop ? 1 : 0,
             visibility: showScrollTop ? 'visible' : 'hidden',
             transition: 'all 0.3s ease',
             zIndex: 999,
             '&:hover': {
-              bgcolor: '#1A1A1A',
-              transform: 'translateY(-4px)',
-              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.3)',
+              bgcolor: '#FB923C',
+              transform: 'translateY(-4px) rotate(5deg)',
+              boxShadow: '0 8px 30px rgba(249, 115, 22, 0.6)',
             },
           }}
         >
@@ -557,7 +673,6 @@ function App() {
             justifyContent: 'center',
             position: 'relative',
             overflow: 'hidden',
-            bgcolor: '#FAFAFA',
           }}
         >
           <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2, textAlign: 'center', py: { xs: 8, md: 0 } }}>
@@ -579,8 +694,9 @@ function App() {
                 <Box 
                   component="span" 
                   sx={{ 
-                    color: '#0066FF',
+                    color: '#F97316',
                     position: 'relative',
+                    textShadow: '0 0 20px rgba(249, 115, 22, 0.3)',
                     '&::after': {
                       content: '"|"',
                       position: 'absolute',
@@ -614,12 +730,15 @@ function App() {
                 variant="contained"
                 size="large"
                 href={`https://github.com/${githubUsername}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 sx={{ 
-                  bgcolor: '#0A0A0A',
+                  bgcolor: '#F97316',
                   color: 'white',
+                  fontWeight: 700,
                   '&:hover': { 
-                    bgcolor: '#1A1A1A',
-                    transform: 'scale(1.02)',
+                    bgcolor: '#FB923C',
+                    transform: 'scale(1.05) translateY(-2px)',
                   },
                   transition: 'all 0.3s ease',
                 }}
@@ -631,13 +750,19 @@ function App() {
                 variant="outlined"
                 size="large"
                 href="https://www.linkedin.com/in/bakari-kerr"
+                target="_blank"
+                rel="noopener noreferrer"
                 sx={{ 
-                  borderColor: '#0A0A0A',
-                  color: '#0A0A0A',
+                  borderColor: '#F97316',
+                  borderWidth: '2px',
+                  color: '#F97316',
+                  fontWeight: 700,
                   '&:hover': { 
-                    borderColor: '#0066FF',
-                    color: '#0066FF',
-                    bgcolor: 'rgba(0, 102, 255, 0.04)',
+                    borderColor: '#FB923C',
+                    borderWidth: '2px',
+                    color: '#FB923C',
+                    bgcolor: 'rgba(249, 115, 22, 0.08)',
+                    transform: 'scale(1.05) translateY(-2px)',
                   },
                   transition: 'all 0.3s ease',
                 }}
@@ -650,7 +775,8 @@ function App() {
         </Box>
 
         {/* About Section */}
-        <Container id="about" maxWidth="md" sx={{ py: { xs: 8, md: 12 } }}>
+        <SectionDivider color="#F97316" />
+        <Container id="about" maxWidth="xl" sx={{ py: { xs: 8, md: 12 } }}>
           <Typography 
             variant="h2" 
             component="h2" 
@@ -685,8 +811,9 @@ I am always eager to connect with like-minded individuals, organizations, and in
         </Container>
 
         {/* Experience Section */}
-        <Box id="experience" sx={{ bgcolor: '#FAFAFA', py: { xs: 8, md: 12 } }}>
-          <Container maxWidth="lg">
+        <SectionDivider color="#F97316" />
+        <Box id="experience" sx={{ py: { xs: 8, md: 12 } }}>
+          <Container maxWidth="xl">
             <Typography 
               variant="h2" 
               component="h2" 
@@ -696,18 +823,23 @@ I am always eager to connect with like-minded individuals, organizations, and in
             >
               Experience
             </Typography>
-            <Grid container spacing={3}>
+            <Box sx={{ 
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              gap: 3,
+            }}>
               {experienceData.map((exp, index) => (
-                <Grid item xs={12} md={6} key={index}>
-                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Card key={index} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <CardContent sx={{ flexGrow: 1, p: 4 }}>
                       <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
                         <Avatar 
                           sx={{ 
-                            bgcolor: '#0066FF', 
+                            bgcolor: '#F97316',
+                            background: 'linear-gradient(135deg, #F97316 0%, #FB923C 100%)',
                             mr: 2,
                             width: 48,
                             height: 48,
+                            boxShadow: '0 4px 12px rgba(249, 115, 22, 0.3)',
                           }}
                         >
                           {exp.icon}
@@ -726,7 +858,7 @@ I am always eager to connect with like-minded individuals, organizations, and in
                         size="small"
                         sx={{ 
                           mb: 2,
-                          bgcolor: 'rgba(0, 0, 0, 0.04)',
+                          bgcolor: 'rgba(249, 115, 22, 0.08)',
                           color: 'text.secondary',
                           border: 'none',
                         }}
@@ -736,14 +868,14 @@ I am always eager to connect with like-minded individuals, organizations, and in
                       </Typography>
                     </CardContent>
                   </Card>
-                </Grid>
               ))}
-            </Grid>
+            </Box>
           </Container>
         </Box>
 
         {/* Projects Section */}
-        <Container id="projects" maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
+        <SectionDivider color="#FB923C" />
+        <Container id="projects" maxWidth="xl" sx={{ py: { xs: 8, md: 12 } }}>
           <Typography 
             variant="h2" 
             component="h2" 
@@ -756,7 +888,7 @@ I am always eager to connect with like-minded individuals, organizations, and in
           
           {loading && (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-              <CircularProgress size={48} sx={{ color: '#0A0A0A' }} />
+              <CircularProgress size={48} sx={{ color: '#F97316' }} />
             </Box>
           )}
           
@@ -775,13 +907,16 @@ I am always eager to connect with like-minded individuals, organizations, and in
           )}
           
           {!loading && !error && (
-            <Grid container spacing={3}>
+            <Box sx={{ 
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              gap: 3,
+            }}>
               {projects.map((project) => {
                 const topLanguages = getTopLanguages(project.languages);
                 
                 return (
-                  <Grid item xs={12} md={6} lg={4} key={project.id}>
-                    <Card sx={{ 
+                    <Card key={project.id} sx={{ 
                       height: '100%', 
                       display: 'flex', 
                       flexDirection: 'column',
@@ -860,10 +995,15 @@ I am always eager to connect with like-minded individuals, organizations, and in
                         <Button
                           size="medium"
                           sx={{ 
-                            color: '#0A0A0A',
+                            color: '#F97316',
+                            fontWeight: 700,
+                            position: 'relative',
                             '&:hover': { 
-                              bgcolor: 'rgba(0, 0, 0, 0.04)',
+                              bgcolor: 'rgba(249, 115, 22, 0.08)',
+                              color: '#FB923C',
+                              transform: 'translateX(4px)',
                             },
+                            transition: 'all 0.3s ease',
                           }}
                           startIcon={<Launch />}
                           href={project.html_url}
@@ -874,16 +1014,16 @@ I am always eager to connect with like-minded individuals, organizations, and in
                         </Button>
                       </CardActions>
                     </Card>
-                  </Grid>
                 );
               })}
-            </Grid>
+            </Box>
           )}
         </Container>
 
         {/* Leadership & Involvement Section */}
-        <Box id="leadership" sx={{ bgcolor: '#FAFAFA', py: { xs: 8, md: 12 } }}>
-          <Container maxWidth="lg">
+        <SectionDivider color="#F97316" />
+        <Box id="leadership" sx={{ py: { xs: 8, md: 12 } }}>
+          <Container maxWidth="xl">
             <Typography 
               variant="h2" 
               component="h2" 
@@ -893,18 +1033,23 @@ I am always eager to connect with like-minded individuals, organizations, and in
             >
               Leadership & Involvement
             </Typography>
-            <Grid container spacing={3}>
+            <Box sx={{ 
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+              gap: 3,
+            }}>
               {leadershipData.map((item, index) => (
-                <Grid item xs={12} md={6} key={index}>
-                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <Card key={index} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <CardContent sx={{ flexGrow: 1, p: 4 }}>
                       <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 3 }}>
                         <Avatar 
                           sx={{ 
-                            bgcolor: '#0066FF', 
+                            bgcolor: '#F97316',
+                            background: 'linear-gradient(135deg, #F97316 0%, #FB923C 100%)',
                             mr: 2,
                             width: 48,
                             height: 48,
+                            boxShadow: '0 4px 12px rgba(249, 115, 22, 0.3)',
                           }}
                         >
                           {item.icon}
@@ -933,9 +1078,8 @@ I am always eager to connect with like-minded individuals, organizations, and in
                       </Typography>
                     </CardContent>
                   </Card>
-                </Grid>
               ))}
-            </Grid>
+            </Box>
           </Container>
         </Box>
 
@@ -943,10 +1087,21 @@ I am always eager to connect with like-minded individuals, organizations, and in
         <Box
           component="footer"
           sx={{
-            bgcolor: '#0A0A0A',
+            bgcolor: '#2D2D35',
+            background: 'linear-gradient(135deg, #2D2D35 0%, #3F3F4A 100%)',
             color: 'white',
             py: { xs: 6, md: 8 },
             textAlign: 'center',
+            position: 'relative',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '3px',
+              background: 'linear-gradient(90deg, #F97316 0%, #FB923C 50%, #F97316 100%)',
+            },
           }}
         >
           <Container maxWidth="lg">
@@ -981,11 +1136,26 @@ I am always eager to connect with like-minded individuals, organizations, and in
                 sx={{
                   color: 'rgba(255, 255, 255, 0.7)',
                   textTransform: 'none',
-                  fontWeight: 400,
+                  fontWeight: 600,
                   fontSize: '0.95rem',
+                  position: 'relative',
                   '&:hover': {
-                    color: 'white',
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#FB923C',
+                    bgcolor: 'rgba(249, 115, 22, 0.1)',
+                  },
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '50%',
+                    width: '0%',
+                    height: '2px',
+                    bgcolor: '#FB923C',
+                    transition: 'all 0.3s ease',
+                    transform: 'translateX(-50%)',
+                  },
+                  '&:hover::after': {
+                    width: '80%',
                   },
                 }}
               >
@@ -996,11 +1166,26 @@ I am always eager to connect with like-minded individuals, organizations, and in
                 sx={{
                   color: 'rgba(255, 255, 255, 0.7)',
                   textTransform: 'none',
-                  fontWeight: 400,
+                  fontWeight: 600,
                   fontSize: '0.95rem',
+                  position: 'relative',
                   '&:hover': {
-                    color: 'white',
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#FB923C',
+                    bgcolor: 'rgba(249, 115, 22, 0.1)',
+                  },
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '50%',
+                    width: '0%',
+                    height: '2px',
+                    bgcolor: '#FB923C',
+                    transition: 'all 0.3s ease',
+                    transform: 'translateX(-50%)',
+                  },
+                  '&:hover::after': {
+                    width: '80%',
                   },
                 }}
               >
@@ -1011,11 +1196,26 @@ I am always eager to connect with like-minded individuals, organizations, and in
                 sx={{
                   color: 'rgba(255, 255, 255, 0.7)',
                   textTransform: 'none',
-                  fontWeight: 400,
+                  fontWeight: 600,
                   fontSize: '0.95rem',
+                  position: 'relative',
                   '&:hover': {
-                    color: 'white',
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#FB923C',
+                    bgcolor: 'rgba(249, 115, 22, 0.1)',
+                  },
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '50%',
+                    width: '0%',
+                    height: '2px',
+                    bgcolor: '#FB923C',
+                    transition: 'all 0.3s ease',
+                    transform: 'translateX(-50%)',
+                  },
+                  '&:hover::after': {
+                    width: '80%',
                   },
                 }}
               >
@@ -1026,11 +1226,26 @@ I am always eager to connect with like-minded individuals, organizations, and in
                 sx={{
                   color: 'rgba(255, 255, 255, 0.7)',
                   textTransform: 'none',
-                  fontWeight: 400,
+                  fontWeight: 600,
                   fontSize: '0.95rem',
+                  position: 'relative',
                   '&:hover': {
-                    color: 'white',
-                    bgcolor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#FB923C',
+                    bgcolor: 'rgba(249, 115, 22, 0.1)',
+                  },
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '50%',
+                    width: '0%',
+                    height: '2px',
+                    bgcolor: '#FB923C',
+                    transition: 'all 0.3s ease',
+                    transform: 'translateX(-50%)',
+                  },
+                  '&:hover::after': {
+                    width: '80%',
                   },
                 }}
               >
@@ -1046,10 +1261,11 @@ I am always eager to connect with like-minded individuals, organizations, and in
                 size="large"
                 sx={{ 
                   color: 'white',
-                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  bgcolor: 'rgba(249, 115, 22, 0.2)',
                   '&:hover': { 
-                    bgcolor: 'rgba(255, 255, 255, 0.2)',
-                    transform: 'scale(1.1)',
+                    bgcolor: '#F97316',
+                    transform: 'scale(1.15) rotate(5deg)',
+                    boxShadow: '0 4px 16px rgba(249, 115, 22, 0.5)',
                   },
                   transition: 'all 0.3s ease',
                 }}
@@ -1063,10 +1279,11 @@ I am always eager to connect with like-minded individuals, organizations, and in
                 size="large"
                 sx={{ 
                   color: 'white',
-                  bgcolor: 'rgba(255, 255, 255, 0.1)',
+                  bgcolor: 'rgba(249, 115, 22, 0.2)',
                   '&:hover': { 
-                    bgcolor: 'rgba(255, 255, 255, 0.2)',
-                    transform: 'scale(1.1)',
+                    bgcolor: '#F97316',
+                    transform: 'scale(1.15) rotate(-5deg)',
+                    boxShadow: '0 4px 16px rgba(249, 115, 22, 0.5)',
                   },
                   transition: 'all 0.3s ease',
                 }}
