@@ -170,6 +170,17 @@ const theme = createTheme({
   },
 });
 
+// GitHub configuration
+const githubUsername = 'Bakari-K';
+
+// Repositories to display - add or remove repo names here
+const featuredRepos = [
+  'ChefUp',
+  'PulmoNet',
+  'TopographyMCMC'
+  // Add more repository names here as strings
+];
+
 function App() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -180,8 +191,6 @@ function App() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
-
-  const githubUsername = 'Bakari-K';
   
   // Roles to cycle through
   const roles = [
@@ -235,61 +244,33 @@ function App() {
           auth: import.meta.env.VITE_GITHUB_TOKEN
         });
         
-        // Fetch pinned repositories using GraphQL
-        console.log('Fetching pinned repos for:', githubUsername);
-        const response = await octokit.graphql(`
-          query {
-            user(login: "${githubUsername}") {
-              pinnedItems(first: 6, types: REPOSITORY) {
-                nodes {
-                  ... on Repository {
-                    id
-                    name
-                    description
-                    url
-                    stargazerCount
-                    forkCount
-                    defaultBranchRef {
-                      name
-                    }
-                  }
-                }
-              }
-            }
-          }
-        `);
-
-        console.log('GraphQL Response:', response);
-
-        if (!response?.user?.pinnedItems?.nodes) {
-          throw new Error('No pinned repositories found');
-        }
-
-        const pinnedRepos = response.user.pinnedItems.nodes.map(repo => ({
-          id: repo.id,
-          name: repo.name,
-          description: repo.description,
-          html_url: repo.url,
-          stargazers_count: repo.stargazerCount,
-          forks_count: repo.forkCount,
-          default_branch: repo.defaultBranchRef?.name || 'main',
-        }));
-
+        // Fetch specific repositories by name using REST API
+        console.log('Fetching repos for:', githubUsername);
+        
         const projectsWithDetails = await Promise.all(
-          pinnedRepos.map(async (project) => {
+          featuredRepos.map(async (repoName) => {
             try {
+              // Fetch repository details
+              const repoResponse = await octokit.rest.repos.get({
+                owner: githubUsername,
+                repo: repoName,
+              });
+
+              const repo = repoResponse.data;
+
+              // Fetch languages for this repository
               const languagesResponse = await octokit.rest.repos.listLanguages({
                 owner: githubUsername,
-                repo: project.name,
+                repo: repoName,
               });
 
               let projectImage = null;
-              let defaultBranch = project.default_branch;
+              let defaultBranch = repo.default_branch || 'main';
               
               try {
                 const contentsResponse = await octokit.rest.repos.getContent({
                   owner: githubUsername,
-                  repo: project.name,
+                  repo: repoName,
                   path: '',
                 });
 
@@ -299,7 +280,7 @@ function App() {
                 );
 
                 if (imageFiles.length > 0) {
-                  projectImage = `https://raw.githubusercontent.com/${githubUsername}/${project.name}/${defaultBranch}/${imageFiles[0].name}`;
+                  projectImage = `https://raw.githubusercontent.com/${githubUsername}/${repoName}/${defaultBranch}/${imageFiles[0].name}`;
                 }
               } catch (imageError) {
                 const branchesToTry = defaultBranch === 'main' ? ['master'] : ['main'];
@@ -308,7 +289,7 @@ function App() {
                   try {
                     const contentsResponse = await octokit.rest.repos.getContent({
                       owner: githubUsername,
-                      repo: project.name,
+                      repo: repoName,
                       path: '',
                       ref: branch
                     });
@@ -319,7 +300,7 @@ function App() {
                     );
 
                     if (imageFiles.length > 0) {
-                      projectImage = `https://raw.githubusercontent.com/${githubUsername}/${project.name}/${branch}/${imageFiles[0].name}`;
+                      projectImage = `https://raw.githubusercontent.com/${githubUsername}/${repoName}/${branch}/${imageFiles[0].name}`;
                       break;
                     }
                   } catch (branchError) {
@@ -328,27 +309,31 @@ function App() {
                 }
                 
                 if (!projectImage) {
-                  console.log(`No image found for ${project.name} in any branch`);
+                  console.log(`No image found for ${repoName} in any branch`);
                 }
               }
 
               return {
-                ...project,
+                id: repo.id,
+                name: repo.name,
+                description: repo.description,
+                html_url: repo.html_url,
+                stargazers_count: repo.stargazers_count,
+                forks_count: repo.forks_count,
+                default_branch: defaultBranch,
                 languages: languagesResponse.data,
                 projectImage
               };
             } catch (detailError) {
-              console.error(`Error fetching details for ${project.name}:`, detailError);
-              return {
-                ...project,
-                languages: {},
-                projectImage: null
-              };
+              console.error(`Error fetching details for ${repoName}:`, detailError);
+              return null;
             }
           })
         );
 
-        setProjects(projectsWithDetails);
+        // Filter out any failed fetches
+        const validProjects = projectsWithDetails.filter(project => project !== null);
+        setProjects(validProjects);
       } catch (err) {
         console.error('Error fetching projects:', err);
         console.error('Error details:', err.message, err.response);
@@ -359,7 +344,7 @@ function App() {
     };
 
     fetchProjects();
-  }, [githubUsername]);
+  }, []); // Dependencies are now constants outside the component
 
   // Typewriter effect
   useEffect(() => {
